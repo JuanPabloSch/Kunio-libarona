@@ -167,6 +167,58 @@ create() {
     this.ball.setImmovable(true);
     this.ball.body.setAllowGravity(false);
 
+    const poleHeight = 50;
+const poleWidth = 4;
+const flagSize = 18;
+
+// ajustes finos
+const poleOffsetX = 0;
+const poleOffsetY = 0;
+const flagOffsetX = 0;
+const flagOffsetY = 0;
+
+    // arriba izquierda
+    this.add.rectangle(offsetX + poleOffsetX, offsetY + poleOffsetY - poleHeight / 2, poleWidth, poleHeight, 0xffff00).setDepth(2);
+    this.add.triangle(offsetX + 7 + flagOffsetX, offsetY + flagOffsetY - poleHeight, 0, 0, flagSize, 8, 0, 16, 0xff0000).setDepth(2);
+
+    // arriba derecha
+    this.add.rectangle(offsetX + fieldWidth + poleOffsetX, offsetY + poleOffsetY - poleHeight / 2, poleWidth, poleHeight, 0xffff00).setDepth(2);
+    this.add.triangle(offsetX + fieldWidth + 11 + flagOffsetX, offsetY + flagOffsetY - poleHeight, 0, 0, -flagSize, 8, 0, 16, 0xff0000).setDepth(2);
+
+    // abajo izquierda
+    this.add.rectangle(
+        offsetX + poleOffsetX,
+        offsetY + fieldHeight - poleHeight / 2,
+        poleWidth,
+        poleHeight,
+        0xffff00
+    ).setDepth(2);
+    this.add.triangle(
+        offsetX + 7+ flagOffsetX,
+        offsetY + fieldHeight - poleHeight + 9 ,
+        0, 0,
+        flagSize, -8,
+        0, -16,
+        0xff0000
+    ).setDepth(2);
+
+        // abajo derecha
+        this.add.rectangle(
+        offsetX + fieldWidth + poleOffsetX,
+        offsetY + fieldHeight - poleHeight / 2,
+        poleWidth,
+        poleHeight,
+        0xffff00
+    ).setDepth(2);
+
+    this.add.triangle(
+    offsetX + fieldWidth + 12 + flagOffsetX,
+    offsetY + fieldHeight +12 - poleHeight - 2,
+    0, 0,
+    -flagSize, -8,
+    0, -16,
+    0xff0000
+    ).setDepth(2);
     // =========================
     // 🌍 WORLD + CÁMARA
     // =========================
