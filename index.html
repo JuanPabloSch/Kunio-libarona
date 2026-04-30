@@ -54,6 +54,12 @@ create() {
 
     const centerX = offsetX + fieldWidth / 2;
     const centerY = offsetY + fieldHeight / 2;
+
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
+
+    this.fieldWidth = fieldWidth;
+    this.fieldHeight = fieldHeight;
     
 
     // =========================
@@ -517,6 +523,22 @@ if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
 
 }
 
+// =========================
+// 🚧 LIMITES CANCHA PLAYER
+// =========================
+this.player.x = Phaser.Math.Clamp(
+    this.player.x,
+    this.offsetX + 40,
+    this.offsetX + this.fieldWidth - 40
+);
+
+this.player.y = Phaser.Math.Clamp(
+    this.player.y,
+    this.offsetY - 70,
+    this.offsetY + this.fieldHeight - 35
+);
+
+
     // =========================
     // 👹 ENEMY SIGUE PELOTA
     // =========================
@@ -536,7 +558,11 @@ if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
         this.enemy.body.setVelocity(0);
     }
 }
+
+
 }
+
+
 
 const config = {
     type: Phaser.AUTO,
