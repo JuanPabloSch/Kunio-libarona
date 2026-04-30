@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Kunio Style Test</title>
+
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.js"></script>
+
     <style>
         body {
             margin: 0;
             background: #111;
         }
+
         canvas {
             display: block;
             margin: auto;
         }
     </style>
 </head>
+
 <body>
 
-<script>
+<script type="module">
+import { setupWorld, createField } from './js/objects/Field.js';
+
 class GameScene extends Phaser.Scene {
 
     constructor() {
@@ -25,128 +31,32 @@ class GameScene extends Phaser.Scene {
     }
 
     preload() {
+
         this.load.spritesheet('player', 'assets/player_run.png', {
             frameWidth: 160,
             frameHeight: 259
         });
+
         this.load.spritesheet('ball', 'assets/ball.png', {
-    frameWidth: Math.floor(1409 / 12),
-    frameHeight: 91
-    });
+            frameWidth: Math.floor(1409 / 12),
+            frameHeight: 91
+        });
     }
 
 create() {
 
-    // =========================
-    // 🌍 MUNDO (PASTO EXTRA)
-    // =========================
-    const worldWidth = 3000;
-    const worldHeight = 1800;
+    setupWorld(this);
+    createField(this);
 
-    // =========================
-    // ⚽ CANCHA REAL
-    // =========================
-    const fieldWidth = 2000;
-    const fieldHeight = 1200;
-
-    const offsetX = (worldWidth - fieldWidth) / 2;
-    const offsetY = (worldHeight - fieldHeight) / 2;
-
-    const centerX = offsetX + fieldWidth / 2;
-    const centerY = offsetY + fieldHeight / 2;
-
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-
-    this.fieldWidth = fieldWidth;
-    this.fieldHeight = fieldHeight;
+    const centerX = this.centerX;
+    const centerY = this.centerY;
+    const offsetX = this.offsetX;
+    const offsetY = this.offsetY;
+    const fieldWidth = this.fieldWidth;
+    const fieldHeight = this.fieldHeight;
+    const worldWidth = this.worldWidth;
+    const worldHeight = this.worldHeight;
     
-
-    // =========================
-    // 🌿 FONDO PASTO
-    // =========================
-    this.add.rectangle(
-        worldWidth / 2,
-        worldHeight / 2,
-        worldWidth,
-        worldHeight,
-        0x0b3d0b
-    );
-
-    // =========================
-    // ⚽ STRIPES CANCHA
-    // =========================
-    const stripeWidth = 100;
-
-    for (let x = 0; x < fieldWidth; x += stripeWidth) {
-
-        let color = (x / stripeWidth) % 2 === 0 ? 0x1f7a1f : 0x228b22;
-
-        this.add.rectangle(
-            offsetX + x + stripeWidth / 2,
-            centerY,
-            stripeWidth,
-            fieldHeight,
-            color
-        );
-    }
-
-    // =========================
-    // 🧾 LÍNEAS CANCHA
-    // =========================
-    const line = this.add.graphics();
-    line.lineStyle(4, 0xffffff);
-    
-    this.add.circle(offsetX + 200, centerY, 6, 0xffffff);
-    this.add.circle(offsetX + fieldWidth - 200, centerY, 6, 0xffffff);
-    line.beginPath();
-    line.arc(offsetX + 300, centerY, 80, -Math.PI / 2, Math.PI / 2);
-    line.strokePath();
-
-    line.beginPath();
-    line.arc(offsetX + fieldWidth - 300, centerY, 80, Math.PI / 2, -Math.PI / 2);
-    line.strokePath();
-    // borde
-    line.strokeRect(offsetX, offsetY, fieldWidth, fieldHeight);
-
-    // media cancha
-    line.beginPath();
-    line.moveTo(centerX, offsetY);
-    line.lineTo(centerX, offsetY + fieldHeight);
-    line.strokePath();
-
-    // círculo central
-    line.strokeCircle(centerX, centerY, 80);
-
-    // áreas grandes
-    line.strokeRect(offsetX, centerY - 250, 300, 500);
-    line.strokeRect(offsetX + fieldWidth - 300, centerY - 250, 300, 500);
-
-    // áreas chicas
-    line.strokeRect(offsetX, centerY - 150, 120, 300);
-    line.strokeRect(offsetX + fieldWidth - 120, centerY - 150, 120, 300);
-
-    // corners
-    line.beginPath();
-    line.arc(offsetX, offsetY, 80, 0, Math.PI / 2);
-    line.strokePath();
-
-    line.beginPath();
-    line.arc(offsetX + fieldWidth, offsetY, 80, Math.PI / 2, Math.PI);
-    line.strokePath();
-
-    line.beginPath();
-    line.arc(offsetX, offsetY + fieldHeight, 80, Math.PI * 1.5, 0);
-    line.strokePath();
-
-    line.beginPath();
-    line.arc(offsetX + fieldWidth, offsetY + fieldHeight, 80, Math.PI, Math.PI * 1.5);
-    line.strokePath();
-
-    
-
-    line.setDepth(1);
-
     // =========================
     // 🧍 PLAYER
     // =========================
@@ -187,199 +97,6 @@ create() {
     this.ball.setDrag(90);
     this.ball.setMaxVelocity(500);
 
-    const poleHeight = 50;
-const poleWidth = 4;
-const flagSize = 18;
-
-// ajustes finos
-const poleOffsetX = 0;
-const poleOffsetY = 0;
-const flagOffsetX = 0;
-const flagOffsetY = 0;
-
-    // arriba izquierda
-    this.add.rectangle(offsetX + poleOffsetX, offsetY + poleOffsetY - poleHeight / 2, poleWidth, poleHeight, 0xffff00).setDepth(2);
-    this.add.triangle(offsetX + 7 + flagOffsetX, offsetY + flagOffsetY - poleHeight, 0, 0, flagSize, 8, 0, 16, 0xff0000).setDepth(2);
-
-    // arriba derecha
-    this.add.rectangle(offsetX + fieldWidth + poleOffsetX, offsetY + poleOffsetY - poleHeight / 2, poleWidth, poleHeight, 0xffff00).setDepth(2);
-    this.add.triangle(offsetX + fieldWidth + 11 + flagOffsetX, offsetY + flagOffsetY - poleHeight, 0, 0, -flagSize, 8, 0, 16, 0xff0000).setDepth(2);
-
-    // abajo izquierda
-    this.add.rectangle(
-        offsetX + poleOffsetX,
-        offsetY + fieldHeight - poleHeight / 2,
-        poleWidth,
-        poleHeight,
-        0xffff00
-    ).setDepth(2);
-    this.add.triangle(
-        offsetX + 7+ flagOffsetX,
-        offsetY + fieldHeight - poleHeight + 9 ,
-        0, 0,
-        flagSize, -8,
-        0, -16,
-        0xff0000
-    ).setDepth(2);
-
-        // abajo derecha
-        this.add.rectangle(
-        offsetX + fieldWidth + poleOffsetX,
-        offsetY + fieldHeight - poleHeight / 2,
-        poleWidth,
-        poleHeight,
-        0xffff00
-    ).setDepth(2);
-
-    this.add.triangle(
-    offsetX + fieldWidth + 12 + flagOffsetX,
-    offsetY + fieldHeight +12 - poleHeight - 2,
-    0, 0,
-    -flagSize, -8,
-    0, -16,
-    0xff0000
-    ).setDepth(2);
-
-    // =========================
-    // 🥅 ARCO IZQUIERDO MEJORADO
-    // =========================
-    const goalDepth = 70;
-    const goalHeight = 180;
-
-    const thin = 3;   // líneas finas
-    const thick = 8;  // línea gruesa (poste delantero)
-
-    const postX = offsetX;
-
-    // =========================
-    // MARCO EXTERIOR
-    // =========================
-
-    // poste delantero (derecha) grueso
-    this.add.rectangle(
-        postX,
-        centerY,
-        thick,
-        goalHeight,
-        0xffffff
-    ).setDepth(1);
-
-    // poste trasero (izquierda) fino
-    this.add.rectangle(
-        postX - goalDepth,
-        centerY,
-        thin,
-        goalHeight,
-        0xffffff
-    ).setDepth(1);
-
-    // travesaño superior fino
-    this.add.rectangle(
-        postX - goalDepth / 2,
-        centerY - goalHeight / 2,
-        goalDepth,
-        thin,
-        0xffffff
-    ).setDepth(1);
-
-    // base inferior fina
-    this.add.rectangle(
-        postX - goalDepth / 2,
-        centerY + goalHeight / 2,
-        goalDepth,
-        thin,
-        0xffffff
-    ).setDepth(1);
-
-    // =========================
-    // 🕸 RED INTERIOR
-    // =========================
-    const net = this.add.graphics();
-    net.lineStyle(1, 0xffffff, 0.6);
-
-    const step = 15;
-
-    // líneas verticales internas
-    for (let x = postX - goalDepth + step; x < postX; x += step) {
-        net.beginPath();
-        net.moveTo(x, centerY - goalHeight / 2);
-        net.lineTo(x, centerY + goalHeight / 2);
-        net.strokePath();
-    }
-
-    // líneas horizontales internas
-    for (let y = centerY - goalHeight / 2 + step; y < centerY + goalHeight / 2; y += step) {
-        net.beginPath();
-        net.moveTo(postX - goalDepth, y);
-        net.lineTo(postX, y);
-        net.strokePath();
-    }
-
-    net.setDepth(1);
-
-    // =========================
-    // 🥅 ARCO DERECHO
-    // =========================
-
-    // poste delantero grueso
-    this.add.rectangle(
-        offsetX + fieldWidth,
-        centerY,
-        8,
-        180,
-        0xffffff
-    ).setDepth(1);
-
-    // poste trasero fino
-    this.add.rectangle(
-        offsetX + fieldWidth + 70,
-        centerY,
-        3,
-        180,
-        0xffffff
-    ).setDepth(1);
-
-    // travesaño superior
-    this.add.rectangle(
-        offsetX + fieldWidth + 35,
-        centerY - 90,
-        70,
-        3,
-        0xffffff
-    ).setDepth(1);
-
-    // base inferior
-    this.add.rectangle(
-        offsetX + fieldWidth + 35,
-        centerY + 90,
-        70,
-        3,
-        0xffffff
-    ).setDepth(1);
-
-    // =========================
-    // 🕸 RED INTERIOR
-    // =========================
-    const netRight = this.add.graphics();
-    netRight.lineStyle(1, 0xffffff, 0.6);
-
-    // líneas verticales
-    for (let x = offsetX + fieldWidth + 15; x < offsetX + fieldWidth + 70; x += 15) {
-        netRight.beginPath();
-        netRight.moveTo(x, centerY - 90);
-        netRight.lineTo(x, centerY + 90);
-        netRight.strokePath();
-    }
-
-    // líneas horizontales
-    for (let y = centerY - 75; y < centerY + 90; y += 15) {
-        netRight.beginPath();
-        netRight.moveTo(offsetX + fieldWidth, y);
-        netRight.lineTo(offsetX + fieldWidth + 70, y);
-        netRight.strokePath();
-    }
-
-    netRight.setDepth(1);
 
     // =========================
     // 🌍 WORLD + CÁMARA
@@ -538,7 +255,6 @@ this.player.y = Phaser.Math.Clamp(
     this.offsetY + this.fieldHeight - 35
 );
 
-
     // =========================
     // 👹 ENEMY SIGUE PELOTA
     // =========================
@@ -558,8 +274,6 @@ this.player.y = Phaser.Math.Clamp(
         this.enemy.body.setVelocity(0);
     }
 }
-
-
 }
 
 
