@@ -153,6 +153,17 @@ create() {
     this.player.setScale(0.5);
     this.player.setCollideWorldBounds(true);
 
+    this.enemy = this.physics.add.sprite(
+    centerX + 250,
+    centerY,
+    'player'
+    );
+
+    this.enemy.setScale(0.5);
+    this.enemy.setTint(0xff4444); // rojo rival
+    this.enemy.setDepth(2);
+    this.enemy.setCollideWorldBounds(true);
+
     // =========================
     // ⚽ BALL
     // =========================
@@ -166,6 +177,9 @@ create() {
     this.ball.setDepth(1);
     this.ball.setImmovable(true);
     this.ball.body.setAllowGravity(false);
+    this.ball.setDamping(false);
+    this.ball.setDrag(90);
+    this.ball.setMaxVelocity(500);
 
     const poleHeight = 50;
 const poleWidth = 4;
@@ -220,146 +234,146 @@ const flagOffsetY = 0;
     0xff0000
     ).setDepth(2);
 
-// =========================
-// 🥅 ARCO IZQUIERDO MEJORADO
-// =========================
-const goalDepth = 70;
-const goalHeight = 180;
+    // =========================
+    // 🥅 ARCO IZQUIERDO MEJORADO
+    // =========================
+    const goalDepth = 70;
+    const goalHeight = 180;
 
-const thin = 3;   // líneas finas
-const thick = 8;  // línea gruesa (poste delantero)
+    const thin = 3;   // líneas finas
+    const thick = 8;  // línea gruesa (poste delantero)
 
-const postX = offsetX;
+    const postX = offsetX;
 
-// =========================
-// MARCO EXTERIOR
-// =========================
+    // =========================
+    // MARCO EXTERIOR
+    // =========================
 
-// poste delantero (derecha) grueso
-this.add.rectangle(
-    postX,
-    centerY,
-    thick,
-    goalHeight,
-    0xffffff
-).setDepth(1);
+    // poste delantero (derecha) grueso
+    this.add.rectangle(
+        postX,
+        centerY,
+        thick,
+        goalHeight,
+        0xffffff
+    ).setDepth(1);
 
-// poste trasero (izquierda) fino
-this.add.rectangle(
-    postX - goalDepth,
-    centerY,
-    thin,
-    goalHeight,
-    0xffffff
-).setDepth(1);
+    // poste trasero (izquierda) fino
+    this.add.rectangle(
+        postX - goalDepth,
+        centerY,
+        thin,
+        goalHeight,
+        0xffffff
+    ).setDepth(1);
 
-// travesaño superior fino
-this.add.rectangle(
-    postX - goalDepth / 2,
-    centerY - goalHeight / 2,
-    goalDepth,
-    thin,
-    0xffffff
-).setDepth(1);
+    // travesaño superior fino
+    this.add.rectangle(
+        postX - goalDepth / 2,
+        centerY - goalHeight / 2,
+        goalDepth,
+        thin,
+        0xffffff
+    ).setDepth(1);
 
-// base inferior fina
-this.add.rectangle(
-    postX - goalDepth / 2,
-    centerY + goalHeight / 2,
-    goalDepth,
-    thin,
-    0xffffff
-).setDepth(1);
+    // base inferior fina
+    this.add.rectangle(
+        postX - goalDepth / 2,
+        centerY + goalHeight / 2,
+        goalDepth,
+        thin,
+        0xffffff
+    ).setDepth(1);
 
-// =========================
-// 🕸 RED INTERIOR
-// =========================
-const net = this.add.graphics();
-net.lineStyle(1, 0xffffff, 0.6);
+    // =========================
+    // 🕸 RED INTERIOR
+    // =========================
+    const net = this.add.graphics();
+    net.lineStyle(1, 0xffffff, 0.6);
 
-const step = 15;
+    const step = 15;
 
-// líneas verticales internas
-for (let x = postX - goalDepth + step; x < postX; x += step) {
-    net.beginPath();
-    net.moveTo(x, centerY - goalHeight / 2);
-    net.lineTo(x, centerY + goalHeight / 2);
-    net.strokePath();
-}
+    // líneas verticales internas
+    for (let x = postX - goalDepth + step; x < postX; x += step) {
+        net.beginPath();
+        net.moveTo(x, centerY - goalHeight / 2);
+        net.lineTo(x, centerY + goalHeight / 2);
+        net.strokePath();
+    }
 
-// líneas horizontales internas
-for (let y = centerY - goalHeight / 2 + step; y < centerY + goalHeight / 2; y += step) {
-    net.beginPath();
-    net.moveTo(postX - goalDepth, y);
-    net.lineTo(postX, y);
-    net.strokePath();
-}
+    // líneas horizontales internas
+    for (let y = centerY - goalHeight / 2 + step; y < centerY + goalHeight / 2; y += step) {
+        net.beginPath();
+        net.moveTo(postX - goalDepth, y);
+        net.lineTo(postX, y);
+        net.strokePath();
+    }
 
-net.setDepth(1);
+    net.setDepth(1);
 
-// =========================
-// 🥅 ARCO DERECHO
-// =========================
+    // =========================
+    // 🥅 ARCO DERECHO
+    // =========================
 
-// poste delantero grueso
-this.add.rectangle(
-    offsetX + fieldWidth,
-    centerY,
-    8,
-    180,
-    0xffffff
-).setDepth(1);
+    // poste delantero grueso
+    this.add.rectangle(
+        offsetX + fieldWidth,
+        centerY,
+        8,
+        180,
+        0xffffff
+    ).setDepth(1);
 
-// poste trasero fino
-this.add.rectangle(
-    offsetX + fieldWidth + 70,
-    centerY,
-    3,
-    180,
-    0xffffff
-).setDepth(1);
+    // poste trasero fino
+    this.add.rectangle(
+        offsetX + fieldWidth + 70,
+        centerY,
+        3,
+        180,
+        0xffffff
+    ).setDepth(1);
 
-// travesaño superior
-this.add.rectangle(
-    offsetX + fieldWidth + 35,
-    centerY - 90,
-    70,
-    3,
-    0xffffff
-).setDepth(1);
+    // travesaño superior
+    this.add.rectangle(
+        offsetX + fieldWidth + 35,
+        centerY - 90,
+        70,
+        3,
+        0xffffff
+    ).setDepth(1);
 
-// base inferior
-this.add.rectangle(
-    offsetX + fieldWidth + 35,
-    centerY + 90,
-    70,
-    3,
-    0xffffff
-).setDepth(1);
+    // base inferior
+    this.add.rectangle(
+        offsetX + fieldWidth + 35,
+        centerY + 90,
+        70,
+        3,
+        0xffffff
+    ).setDepth(1);
 
-// =========================
-// 🕸 RED INTERIOR
-// =========================
-const netRight = this.add.graphics();
-netRight.lineStyle(1, 0xffffff, 0.6);
+    // =========================
+    // 🕸 RED INTERIOR
+    // =========================
+    const netRight = this.add.graphics();
+    netRight.lineStyle(1, 0xffffff, 0.6);
 
-// líneas verticales
-for (let x = offsetX + fieldWidth + 15; x < offsetX + fieldWidth + 70; x += 15) {
-    netRight.beginPath();
-    netRight.moveTo(x, centerY - 90);
-    netRight.lineTo(x, centerY + 90);
-    netRight.strokePath();
-}
+    // líneas verticales
+    for (let x = offsetX + fieldWidth + 15; x < offsetX + fieldWidth + 70; x += 15) {
+        netRight.beginPath();
+        netRight.moveTo(x, centerY - 90);
+        netRight.lineTo(x, centerY + 90);
+        netRight.strokePath();
+    }
 
-// líneas horizontales
-for (let y = centerY - 75; y < centerY + 90; y += 15) {
-    netRight.beginPath();
-    netRight.moveTo(offsetX + fieldWidth, y);
-    netRight.lineTo(offsetX + fieldWidth + 70, y);
-    netRight.strokePath();
-}
+    // líneas horizontales
+    for (let y = centerY - 75; y < centerY + 90; y += 15) {
+        netRight.beginPath();
+        netRight.moveTo(offsetX + fieldWidth, y);
+        netRight.lineTo(offsetX + fieldWidth + 70, y);
+        netRight.strokePath();
+    }
 
-netRight.setDepth(1);
+    netRight.setDepth(1);
 
     // =========================
     // 🌍 WORLD + CÁMARA
@@ -398,6 +412,11 @@ netRight.setDepth(1);
         frameRate: 8,
         repeat: -1
     });
+        this.ballShot = false;
+
+    this.shootKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
 }
 
 update() {
@@ -480,8 +499,42 @@ if (isMoving) {
         offsetY = 65;
     }
 
+    if (!this.ballShot) {
+
     this.ball.x = Phaser.Math.Linear(this.ball.x, this.player.x + offsetX, 0.25);
     this.ball.y = Phaser.Math.Linear(this.ball.y, this.player.y + offsetY, 0.25);
+
+}
+
+// =========================
+// 💥 SHOOT
+// =========================
+if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+
+    this.ballShot = true;
+
+    this.ball.body.setVelocity(300, 0);
+
+}
+
+    // =========================
+    // 👹 ENEMY SIGUE PELOTA
+    // =========================
+    const enemySpeed = 120;
+
+    const dx = this.ball.x - this.enemy.x;
+    const dy = this.ball.y - this.enemy.y;
+
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > 5) {
+        this.enemy.body.setVelocity(
+            (dx / dist) * enemySpeed,
+            (dy / dist) * enemySpeed
+        );
+    } else {
+        this.enemy.body.setVelocity(0);
+    }
 }
 }
 
