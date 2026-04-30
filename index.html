@@ -219,6 +219,148 @@ const flagOffsetY = 0;
     0, -16,
     0xff0000
     ).setDepth(2);
+
+// =========================
+// 🥅 ARCO IZQUIERDO MEJORADO
+// =========================
+const goalDepth = 70;
+const goalHeight = 180;
+
+const thin = 3;   // líneas finas
+const thick = 8;  // línea gruesa (poste delantero)
+
+const postX = offsetX;
+
+// =========================
+// MARCO EXTERIOR
+// =========================
+
+// poste delantero (derecha) grueso
+this.add.rectangle(
+    postX,
+    centerY,
+    thick,
+    goalHeight,
+    0xffffff
+).setDepth(1);
+
+// poste trasero (izquierda) fino
+this.add.rectangle(
+    postX - goalDepth,
+    centerY,
+    thin,
+    goalHeight,
+    0xffffff
+).setDepth(1);
+
+// travesaño superior fino
+this.add.rectangle(
+    postX - goalDepth / 2,
+    centerY - goalHeight / 2,
+    goalDepth,
+    thin,
+    0xffffff
+).setDepth(1);
+
+// base inferior fina
+this.add.rectangle(
+    postX - goalDepth / 2,
+    centerY + goalHeight / 2,
+    goalDepth,
+    thin,
+    0xffffff
+).setDepth(1);
+
+// =========================
+// 🕸 RED INTERIOR
+// =========================
+const net = this.add.graphics();
+net.lineStyle(1, 0xffffff, 0.6);
+
+const step = 15;
+
+// líneas verticales internas
+for (let x = postX - goalDepth + step; x < postX; x += step) {
+    net.beginPath();
+    net.moveTo(x, centerY - goalHeight / 2);
+    net.lineTo(x, centerY + goalHeight / 2);
+    net.strokePath();
+}
+
+// líneas horizontales internas
+for (let y = centerY - goalHeight / 2 + step; y < centerY + goalHeight / 2; y += step) {
+    net.beginPath();
+    net.moveTo(postX - goalDepth, y);
+    net.lineTo(postX, y);
+    net.strokePath();
+}
+
+net.setDepth(1);
+
+// =========================
+// 🥅 ARCO DERECHO
+// =========================
+
+// poste delantero grueso
+this.add.rectangle(
+    offsetX + fieldWidth,
+    centerY,
+    8,
+    180,
+    0xffffff
+).setDepth(1);
+
+// poste trasero fino
+this.add.rectangle(
+    offsetX + fieldWidth + 70,
+    centerY,
+    3,
+    180,
+    0xffffff
+).setDepth(1);
+
+// travesaño superior
+this.add.rectangle(
+    offsetX + fieldWidth + 35,
+    centerY - 90,
+    70,
+    3,
+    0xffffff
+).setDepth(1);
+
+// base inferior
+this.add.rectangle(
+    offsetX + fieldWidth + 35,
+    centerY + 90,
+    70,
+    3,
+    0xffffff
+).setDepth(1);
+
+// =========================
+// 🕸 RED INTERIOR
+// =========================
+const netRight = this.add.graphics();
+netRight.lineStyle(1, 0xffffff, 0.6);
+
+// líneas verticales
+for (let x = offsetX + fieldWidth + 15; x < offsetX + fieldWidth + 70; x += 15) {
+    netRight.beginPath();
+    netRight.moveTo(x, centerY - 90);
+    netRight.lineTo(x, centerY + 90);
+    netRight.strokePath();
+}
+
+// líneas horizontales
+for (let y = centerY - 75; y < centerY + 90; y += 15) {
+    netRight.beginPath();
+    netRight.moveTo(offsetX + fieldWidth, y);
+    netRight.lineTo(offsetX + fieldWidth + 70, y);
+    netRight.strokePath();
+}
+
+netRight.setDepth(1);
+
     // =========================
     // 🌍 WORLD + CÁMARA
     // =========================
