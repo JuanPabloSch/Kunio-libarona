@@ -12,20 +12,34 @@ export class Enemy {
     }
 
     update() {
-        const speed = 120;
 
-        const dx = this.ball.sprite.x - this.sprite.x;
-        const dy = this.ball.sprite.y - this.sprite.y;
+    let speed = 150;
 
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist > 5) {
-            this.sprite.body.setVelocity(
-                (dx / dist) * speed,
-                (dy / dist) * speed
-            );
-        } else {
-            this.sprite.body.setVelocity(0);
-        }
+    if (this.ball.owner === 'enemy') {
+        speed = 170;
     }
+
+    let targetX = this.ball.sprite.x;
+    let targetY = this.ball.sprite.y;
+
+    // si tiene pelota va al arco izquierdo
+    if (this.ball.owner === 'enemy') {
+        targetX = this.scene.offsetX;
+        targetY = this.scene.centerY;
+    }
+
+    const dx = targetX - this.sprite.x;
+    const dy = targetY - this.sprite.y;
+
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist > 5) {
+        this.sprite.body.setVelocity(
+            (dx / dist) * speed,
+            (dy / dist) * speed
+        );
+    } else {
+        this.sprite.body.setVelocity(0);
+    }
+}   
 }

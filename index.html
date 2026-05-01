@@ -50,7 +50,9 @@ class GameScene extends Phaser.Scene {
 
     setupWorld(this);
     createField(this);
-
+        this.callKey = this.input.keyboard.addKey(
+    Phaser.Input.Keyboard.KeyCodes.SHIFT
+    );
     // =========================
     // PLAYER
     // =========================
@@ -136,26 +138,54 @@ update() {
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     // lento si está cerca
-    this.player.slowed = dist < 140;
+    this.player.slowed = false;
+this.player.boosted = false;
 
-        // robo simple
+// si player tiene pelota y enemy presiona
+if (
+    this.ball.owner === 'player' &&
+    dist < 140
+) {
+    this.player.slowed = true;
+}
+
+// si enemy tiene pelota, player corre más rápido
+if (this.ball.owner === 'enemy') {
+    this.player.boosted = true;
+}
+
     if (
     dist < 55 &&
     this.ball.state === 'IDLE' &&
-    !this.player.stunned
-    ) {
+    !this.player.stunned &&
+    this.ball.owner === 'player'
+) {
     this.player.stun(1500);
 
-    this.ball.shoot(-180, 0);
+    this.ball.owner = 'enemy';
+}
+if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
 
+    const callDist = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.ball.sprite.x,
+        this.ball.sprite.y
+    );
 
-
-
-        // pelota pasa adelante del enemy
-        this.ball.sprite.x = this.enemy.sprite.x - 40;
-        this.ball.sprite.y = this.enemy.sprite.y + 20;
+    if (
+        callDist < 260 &&
+        this.ball.owner !== 'player'
+    ) {
+        this.ball.owner = 'player';
+        this.ball.state = 'IDLE';
     }
 
+
+if (callDist < 220) {
+    this.ball.owner = 'player';
+}
+}
     // =========================
     // BALL OFFSET
     // =========================
@@ -176,7 +206,10 @@ update() {
     // =========================
     // SHOOT
     // =========================
-    if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
+    if (
+    Phaser.Input.Keyboard.JustDown(this.shootKey) &&
+    this.ball.owner === 'player'
+) {
 
         let vx = 0;
         let vy = 0;

@@ -15,6 +15,7 @@ export class Player {
         this.slowed = false;
         this.stunned = false;
         this.stunTimer = 0;
+        this.boosted = false;
     }
 
     update() {
@@ -41,9 +42,8 @@ export class Player {
         
         let speed = 200;
 
-        if (this.slowed) {
-            speed = 120;
-        }
+        if (this.slowed) speed = 145;
+        if (this.boosted) speed = 245;
 
         this.sprite.body.setVelocity(0);
 

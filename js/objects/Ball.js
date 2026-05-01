@@ -10,26 +10,42 @@ export class Ball {
         this.sprite.setMaxVelocity(500);
 
         this.state = 'IDLE';
+        this.owner = 'player';
 
         // ⏱ control de tiempo de tiro
         this.shotTimer = 0;
     }
 
-    update(player, offsetX, offsetY) {
+update(player, offsetX, offsetY) {
 
     if (this.state === 'IDLE') {
 
         this.sprite.setVelocity(0);
 
+        let target = player;
+        let followX = offsetX;
+        let followY = offsetY;
+
+        if (this.owner === 'enemy') {
+            target = this.scene.enemy.sprite;
+
+            followX = -45;
+            followY = 40;
+        }
+
+        if (this.owner === 'none') {
+            return;
+        }
+
         this.sprite.x = Phaser.Math.Linear(
             this.sprite.x,
-            player.x + offsetX,
+            target.x + followX,
             0.25
         );
 
         this.sprite.y = Phaser.Math.Linear(
             this.sprite.y,
-            player.y + offsetY,
+            target.y + followY,
             0.25
         );
     }
@@ -60,11 +76,11 @@ export class Ball {
     }
 
     shoot(vx, vy) {
-        this.state = 'SHOT';
+    this.state = 'SHOT';
+    this.owner = 'none';
 
-        this.sprite.setVelocity(vx, vy);
+    this.sprite.setVelocity(vx, vy);
 
-        // ⏱ bloqueo mínimo de control
-        this.shotTimer = 400; // ms
-    }
+    this.shotTimer = 400;
+}
 }
