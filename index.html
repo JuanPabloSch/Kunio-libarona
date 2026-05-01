@@ -159,8 +159,20 @@ class GameScene extends Phaser.Scene {
         // SHOOT
         // =========================
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
-        this.ball.shoot(300, 0);
-    }
+        let vx = 0;
+        let vy = 0;
+
+        const power = 350;
+
+        if (this.lastDirection === 'left') vx = -power;
+        if (this.lastDirection === 'right') vx = power;
+
+        if (this.cursors.up.isDown) vy = -power;
+        if (this.cursors.down.isDown) vy = power;
+
+        // si no hay input vertical, queda tiro horizontal puro
+        this.ball.shoot(vx, vy);
+            }
 
         // =========================
         // LIMITES
