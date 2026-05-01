@@ -11,10 +11,39 @@ export class Player {
         this.lastDirection = 'right';
 
         this.cursors = scene.input.keyboard.createCursorKeys();
+
+        this.slowed = false;
+        this.stunned = false;
+        this.stunTimer = 0;
     }
 
     update() {
-        const speed = 200;
+    if (this.stunned) {
+
+    this.stunTimer -= this.scene.game.loop.delta;
+
+    this.sprite.body.setVelocity(0);
+
+    // color stun
+    this.sprite.setTint(0xff8800);
+
+    // congelar frame
+    this.sprite.stop();
+    this.sprite.setFrame(0);
+
+    if (this.stunTimer <= 0) {
+        this.stunned = false;
+        this.sprite.clearTint();
+    }
+
+    return;
+}
+        
+        let speed = 200;
+
+        if (this.slowed) {
+            speed = 120;
+        }
 
         this.sprite.body.setVelocity(0);
 
@@ -53,4 +82,9 @@ export class Player {
             this.sprite.setFrame(0);
         }
     }
+stun(ms = 1500) {
+    this.stunned = true;
+    this.stunTimer = ms;
 }
+}
+

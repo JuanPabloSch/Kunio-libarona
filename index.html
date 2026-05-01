@@ -123,12 +123,38 @@ class GameScene extends Phaser.Scene {
     });
 }
 
- update() {
+update() {
 
     // =========================
     // PLAYER
     // =========================
     this.player.update();
+    // distancia enemy-player
+    const dx = this.enemy.sprite.x - this.player.sprite.x;
+    const dy = this.enemy.sprite.y - this.player.sprite.y;
+
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    // lento si está cerca
+    this.player.slowed = dist < 140;
+
+        // robo simple
+    if (
+    dist < 55 &&
+    this.ball.state === 'IDLE' &&
+    !this.player.stunned
+    ) {
+    this.player.stun(1500);
+
+    this.ball.shoot(-180, 0);
+
+
+
+
+        // pelota pasa adelante del enemy
+        this.ball.sprite.x = this.enemy.sprite.x - 40;
+        this.ball.sprite.y = this.enemy.sprite.y + 20;
+    }
 
     // =========================
     // BALL OFFSET
