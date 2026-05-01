@@ -102,14 +102,6 @@ class GameScene extends Phaser.Scene {
     update() {
 
         // =========================
-        // BALL STATE RESET
-        // =========================
-        const v = this.ball.sprite.body.velocity;
-        if (this.ball.ballShot && (Math.abs(v.x) + Math.abs(v.y)) < 5) {
-            this.ball.ballShot = false;
-        }
-
-        // =========================
         // PLAYER INPUT
         // =========================
         const speed = 200;
@@ -146,9 +138,8 @@ class GameScene extends Phaser.Scene {
             this.player.stop();
             this.player.setFrame(0);
         }
-
         // =========================
-        // BALL OFFSET (solo cálculo)
+        // BALL OFFSET
         // =========================
         let offsetX = 25;
         let offsetY = 50;
@@ -160,17 +151,16 @@ class GameScene extends Phaser.Scene {
         else if (this.cursors.down.isDown) offsetY = 65;
 
         // =========================
-        // BALL UPDATE (único control)
+        // BALL CONTROL CENTRAL
         // =========================
         this.ball.update(this.player, offsetX, offsetY);
-        
 
         // =========================
         // SHOOT
         // =========================
         if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
-            this.ball.shoot(300, 0);
-        }
+        this.ball.shoot(300, 0);
+    }
 
         // =========================
         // LIMITES

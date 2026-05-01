@@ -6,47 +6,65 @@ export class Ball {
 
         this.sprite.setScale(0.3);
         this.sprite.setDepth(1);
-        this.sprite.setImmovable(true);
-        this.sprite.body.setAllowGravity(false);
         this.sprite.setDrag(90);
         this.sprite.setMaxVelocity(500);
 
-        this.ballShot = false;
+        this.state = 'IDLE';
+
+        // ⏱ control de tiempo de tiro
+        this.shotTimer = 0;
     }
 
     update(player, offsetX, offsetY) {
 
-        const isMoving =
-            player.body.velocity.x !== 0 ||
-            player.body.velocity.y !== 0;
+    if (this.state === 'IDLE') {
 
-        // 🔁 solo gira si se mueve el jugador
-        if (isMoving) {
-            if (!this.sprite.anims.isPlaying) {
-                this.sprite.play('ball_spin');
+        this.sprite.setVelocity(0);
+
+        this.sprite.x = Phaser.Math.Linear(
+            this.sprite.x,
+            player.x + offsetX,
+            0.25
+        );
+
+        this.sprite.y = Phaser.Math.Linear(
+            this.sprite.y,
+            player.y + offsetY,
+            0.25
+        );
+    }
+
+        // =========================
+        // SHOT
+        // =========================
+        if (this.state === 'SHOT') {
+
+            this.shotTimer -= this.scene.game.loop.delta;
+
+            // mínimo 300ms de tiro obligatorio
+            if (this.shotTimer <= 0) {
+
+                const v = this.sprite.body.velocity;
+
+                // ahora sí chequeo suave
+                if (Math.abs(v.x) + Math.abs(v.y) < 2) {
+                    this.state = 'IDLE';
+                }
             }
-        } else {
-            this.sprite.anims.stop();
         }
 
-        // ⚽ follow al jugador SOLO si no pateaste
-        if (!this.ballShot) {
-            this.sprite.x = Phaser.Math.Linear(
-                this.sprite.x,
-                player.x + offsetX,
-                0.25
-            );
-
-            this.sprite.y = Phaser.Math.Linear(
-                this.sprite.y,
-                player.y + offsetY,
-                0.25
-            );
+        // animación única
+        if (!this.sprite.anims.isPlaying) {
+            this.sprite.play('ball_spin');
         }
     }
 
     shoot(vx, vy) {
-        this.ballShot = true;
+        this.state = 'SHOT';
+
         this.sprite.setVelocity(vx, vy);
+
+        // ⏱ bloqueo mínimo de control
+        this.shotTimer = 400; // ms
     }
 }
