@@ -11,6 +11,7 @@ export class Ball {
 
         this.state = 'IDLE';
         this.owner = 'player';
+        this.protectTimer = 0;
 
         // ⏱ control de tiempo de tiro
         this.shotTimer = 0;
@@ -49,7 +50,9 @@ update(player, offsetX, offsetY) {
             0.25
         );
     }
-
+    if (this.protectTimer > 0) {
+    this.protectTimer -= this.scene.game.loop.delta;
+}
         // =========================
         // SHOT
         // =========================

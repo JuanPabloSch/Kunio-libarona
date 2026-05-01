@@ -158,7 +158,8 @@ if (this.ball.owner === 'enemy') {
     dist < 55 &&
     this.ball.state === 'IDLE' &&
     !this.player.stunned &&
-    this.ball.owner === 'player'
+    this.ball.owner === 'player' &&
+    this.ball.protectTimer <= 0
 ) {
     this.player.stun(1500);
 
@@ -179,12 +180,8 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
     ) {
         this.ball.owner = 'player';
         this.ball.state = 'IDLE';
+        this.ball.protectTimer = 700;
     }
-
-
-if (callDist < 220) {
-    this.ball.owner = 'player';
-}
 }
     // =========================
     // BALL OFFSET
