@@ -81,6 +81,13 @@ class GameScene extends Phaser.Scene {
         this.ball
     );
 
+    //Reset positions
+    this.startPlayerX = this.centerX;
+    this.startPlayerY = this.centerY;
+
+    this.startEnemyX = this.centerX + 250;
+    this.startEnemyY = this.centerY;
+
     // =========================
     // WORLD / CAMERA
     // =========================
@@ -128,7 +135,7 @@ class GameScene extends Phaser.Scene {
     // =========================
     this.scoreHome = 0;
     this.scoreAway = 0;
-
+    //Goal text
     this.homeText = this.add.text(
         20,
         20,
@@ -151,6 +158,19 @@ class GameScene extends Phaser.Scene {
         }
     ).setScrollFactor(0).setDepth(99);
 
+    this.goalText = this.add.text(
+    320,
+    260,
+    'GOAL!!',
+    {
+        fontSize: '56px',
+        color: '#ffff00',
+        fontStyle: 'bold'
+    }
+    )
+    .setScrollFactor(0)
+    .setDepth(200)
+    .setVisible(false);
 }
 
 update() {
@@ -304,14 +324,39 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
     }
 
     ballReset() {
-        this.ball.sprite.setVelocity(0);
+
+    // frenar todo
+    this.player.sprite.body.setVelocity(0);
+    this.enemy.sprite.body.setVelocity(0);
+    this.ball.sprite.body.setVelocity(0);
+
+    // mostrar cartel
+    this.goalText.setVisible(true);
+
+    // congelar momentáneo
+    this.physics.pause();
+
+    this.time.delayedCall(1000, () => {
+
+        // reset posiciones
+        this.player.sprite.x = this.startPlayerX;
+        this.player.sprite.y = this.startPlayerY;
+
+        this.enemy.sprite.x = this.startEnemyX;
+        this.enemy.sprite.y = this.startEnemyY;
 
         this.ball.sprite.x = this.centerX + 50;
         this.ball.sprite.y = this.centerY;
 
         this.ball.state = 'IDLE';
         this.ball.owner = 'player';
-    }
+
+        this.goalText.setVisible(false);
+
+        this.physics.resume();
+
+    });
+}
 }
 
 const config = {
