@@ -116,7 +116,8 @@ class GameScene extends Phaser.Scene {
             this.lastDirection = 'left';
             moving = true;
         }
-        else if (this.cursors.right.isDown) {
+
+        if (this.cursors.right.isDown) {
             this.player.body.setVelocityX(speed);
             this.player.flipX = false;
             this.lastDirection = 'right';
@@ -127,13 +128,16 @@ class GameScene extends Phaser.Scene {
             this.player.body.setVelocityY(-speed);
             moving = true;
         }
-        else if (this.cursors.down.isDown) {
+
+        if (this.cursors.down.isDown) {
             this.player.body.setVelocityY(speed);
             moving = true;
         }
 
         if (moving) {
-            if (!this.player.anims.isPlaying) this.player.play('run');
+            if (!this.player.anims.isPlaying) {
+                this.player.play('run');
+            }
         } else {
             this.player.stop();
             this.player.setFrame(0);
