@@ -123,6 +123,34 @@ class GameScene extends Phaser.Scene {
         frameRate: 8,
         repeat: -1
     });
+    // =========================
+    // SCORE
+    // =========================
+    this.scoreHome = 0;
+    this.scoreAway = 0;
+
+    this.homeText = this.add.text(
+        20,
+        20,
+        'HOME 0',
+        {
+            fontSize: '28px',
+            color: '#ffffff',
+            fontStyle: 'bold'
+        }
+    ).setScrollFactor(0).setDepth(99);
+
+    this.awayText = this.add.text(
+        620,
+        20,
+        'AWAY 0',
+        {
+            fontSize: '28px',
+            color: '#ffffff',
+            fontStyle: 'bold'
+        }
+    ).setScrollFactor(0).setDepth(99);
+
 }
 
 update() {
@@ -137,22 +165,19 @@ update() {
 
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // lento si está cerca
-    this.player.slowed = false;
-this.player.boosted = false;
+    this.player.slowed = (
+        this.ball.owner === 'player' &&
+        dist < 140
+    );
 
-// si player tiene pelota y enemy presiona
-if (
-    this.ball.owner === 'player' &&
-    dist < 140
-) {
-    this.player.slowed = true;
-}
+    this.player.boosted = (
+        this.ball.owner === 'enemy'
+    );
 
-// si enemy tiene pelota, player corre más rápido
-if (this.ball.owner === 'enemy') {
-    this.player.boosted = true;
-}
+    // si enemy tiene pelota, player corre más rápido
+    if (this.ball.owner === 'enemy') {
+        this.player.boosted = true;
+    }
 
     if (
     dist < 55 &&
@@ -241,8 +266,52 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
     // ENEMY
     // =========================
     this.enemy.update();
-}
 
+    // =========================
+    // GOALS
+    // =========================
+    const bx = this.ball.sprite.x;
+    const by = this.ball.sprite.y;
+
+    const goalTop = this.centerY - 90;
+    const goalBottom = this.centerY + 90;
+
+    // gol izquierda = AWAY
+    if (
+        bx < this.offsetX - 20 &&
+        by > goalTop &&
+        by < goalBottom
+    ) {
+        this.scoreAway++;
+        this.updateScore();
+        this.ballReset();
+    }
+
+    // gol derecha = HOME
+    if (
+        bx > this.offsetX + this.fieldWidth + 20 &&
+        by > goalTop &&
+        by < goalBottom
+    ) {
+        this.scoreHome++;
+        this.updateScore();
+        this.ballReset();
+    }
+}
+    updateScore() {
+        this.homeText.setText('HOME ' + this.scoreHome);
+        this.awayText.setText('AWAY ' + this.scoreAway);
+    }
+
+    ballReset() {
+        this.ball.sprite.setVelocity(0);
+
+        this.ball.sprite.x = this.centerX + 50;
+        this.ball.sprite.y = this.centerY;
+
+        this.ball.state = 'IDLE';
+        this.ball.owner = 'player';
+    }
 }
 
 const config = {
