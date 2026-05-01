@@ -55,6 +55,14 @@ class GameScene extends Phaser.Scene {
     Phaser.Input.Keyboard.KeyCodes.SHIFT
     );
 
+this.shootKey = this.input.keyboard.addKey(
+    Phaser.Input.Keyboard.KeyCodes.SPACE
+);
+
+this.tackleKey = this.input.keyboard.addKey(
+    Phaser.Input.Keyboard.KeyCodes.CTRL
+);
+
     this.goalLock = false;
 
     // =========================
@@ -232,6 +240,29 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
         this.ball.protectTimer = 700;
     }
 }
+
+    if (Phaser.Input.Keyboard.JustDown(this.tackleKey)) {
+
+    const tackleDist = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.enemy.sprite.x,
+        this.enemy.sprite.y
+    );
+
+    if (
+    tackleDist < 80 &&
+    this.ball.owner === 'enemy'
+    ) {
+        this.enemy.stun(1000);
+
+        this.ball.owner = 'player';
+        this.ball.state = 'IDLE';
+
+        this.ball.protectTimer = 900;
+    }
+}
+
     // =========================
     // BALL OFFSET
     // =========================
