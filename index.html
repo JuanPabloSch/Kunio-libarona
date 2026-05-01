@@ -50,9 +50,13 @@ class GameScene extends Phaser.Scene {
 
     setupWorld(this);
     createField(this);
-        this.callKey = this.input.keyboard.addKey(
+    
+    this.callKey = this.input.keyboard.addKey(
     Phaser.Input.Keyboard.KeyCodes.SHIFT
     );
+
+    this.goalLock = false;
+
     // =========================
     // PLAYER
     // =========================
@@ -298,10 +302,12 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
 
     // gol izquierda = AWAY
     if (
-        bx < this.offsetX - 20 &&
-        by > goalTop &&
-        by < goalBottom
+    !this.goalLock &&
+    bx < this.offsetX - 20 &&
+    by > goalTop &&
+    by < goalBottom
     ) {
+        this.goalLock = true;
         this.scoreAway++;
         this.updateScore();
         this.ballReset();
@@ -309,13 +315,15 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
 
     // gol derecha = HOME
     if (
-        bx > this.offsetX + this.fieldWidth + 20 &&
-        by > goalTop &&
-        by < goalBottom
+    !this.goalLock &&
+    bx > this.offsetX + this.fieldWidth + 5 &&
+    by > goalTop &&
+    by < goalBottom
     ) {
-        this.scoreHome++;
-        this.updateScore();
-        this.ballReset();
+    this.goalLock = true;
+    this.scoreHome++;
+    this.updateScore();
+    this.ballReset();
     }
 }
     updateScore() {
@@ -354,6 +362,7 @@ if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
         this.goalText.setVisible(false);
 
         this.physics.resume();
+        this.goalLock = false;
 
     });
 }
