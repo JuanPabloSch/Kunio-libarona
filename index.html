@@ -24,6 +24,8 @@
 <script type="module">
 import { setupWorld, createField } from './js/objects/Field.js';
 import { Ball } from './js/objects/Ball.js';
+import { Player } from './js/objects/Player.js';
+import { Enemy } from './js/objects/Enemy.js';
 
 class GameScene extends Phaser.Scene {
 
@@ -46,172 +48,145 @@ class GameScene extends Phaser.Scene {
 
     create() {
 
-        setupWorld(this);
-        createField(this);
+    setupWorld(this);
+    createField(this);
 
-        // =========================
-        // PLAYER / ENEMY
-        // =========================
-        this.player = this.physics.add.sprite(this.centerX, this.centerY, 'player');
-        this.player.setDepth(2);
-        this.player.setScale(0.5);
-        this.player.setCollideWorldBounds(true);
+    // =========================
+    // PLAYER
+    // =========================
+    this.player = new Player(
+        this,
+        this.centerX,
+        this.centerY
+    );
 
-        this.enemy = this.physics.add.sprite(this.centerX + 250, this.centerY, 'player');
-        this.enemy.setScale(0.5);
-        this.enemy.setTint(0xff4444);
-        this.enemy.setDepth(2);
-        this.enemy.setCollideWorldBounds(true);
+    // =========================
+    // BALL
+    // =========================
+    this.ball = new Ball(
+        this,
+        this.centerX + 50,
+        this.centerY
+    );
 
-        // =========================
-        // BALL (CONTROL CENTRALIZADO)
-        // =========================
-        this.ball = new Ball(this, this.centerX + 50, this.centerY);
+    // =========================
+    // ENEMY
+    // =========================
+    this.enemy = new Enemy(
+        this,
+        this.centerX + 250,
+        this.centerY,
+        this.ball
+    );
 
-        // =========================
-        // WORLD / CAMERA
-        // =========================
-        this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
-        this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight);
-        this.cameras.main.startFollow(this.player);
+    // =========================
+    // WORLD / CAMERA
+    // =========================
+    this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
 
-        // =========================
-        // INPUT
-        // =========================
-        this.cursors = this.input.keyboard.createCursorKeys();
-        this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.cameras.main.setBounds(
+        0, 0,
+        this.worldWidth,
+        this.worldHeight
+    );
 
-        // =========================
-        // ANIMACIONES
-        // =========================
-        this.anims.create({
-            key: 'ball_spin',
-            frames: this.anims.generateFrameNumbers('ball', { start: 0, end: 11 }),
-            frameRate: 12,
-            repeat: -1
-        });
+    this.cameras.main.startFollow(this.player.sprite);
 
-        this.anims.create({
-            key: 'run',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 5 }),
-            frameRate: 8,
-            repeat: -1
-        });
-    }
+    // =========================
+    // INPUT
+    // =========================
+    this.shootKey = this.input.keyboard.addKey(
+        Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
 
-    update() {
+    // =========================
+    // ANIMACIONES
+    // =========================
+    this.anims.create({
+        key: 'ball_spin',
+        frames: this.anims.generateFrameNumbers('ball', {
+            start: 0,
+            end: 11
+        }),
+        frameRate: 12,
+        repeat: -1
+    });
 
-        // =========================
-        // PLAYER INPUT
-        // =========================
-        const speed = 200;
+    this.anims.create({
+        key: 'run',
+        frames: this.anims.generateFrameNumbers('player', {
+            start: 0,
+            end: 5
+        }),
+        frameRate: 8,
+        repeat: -1
+    });
+}
 
-        this.player.body.setVelocity(0);
+ update() {
 
-        let moving = false;
+    // =========================
+    // PLAYER
+    // =========================
+    this.player.update();
 
-        if (this.cursors.left.isDown) {
-            this.player.body.setVelocityX(-speed);
-            this.player.flipX = true;
-            this.lastDirection = 'left';
-            moving = true;
-        }
+    // =========================
+    // BALL OFFSET
+    // =========================
+    let offsetX = 25;
+    let offsetY = 50;
 
-        if (this.cursors.right.isDown) {
-            this.player.body.setVelocityX(speed);
-            this.player.flipX = false;
-            this.lastDirection = 'right';
-            moving = true;
-        }
+    if (this.player.lastDirection === 'left') offsetX = -60;
+    else offsetX = 45;
 
-        if (this.cursors.up.isDown) {
-            this.player.body.setVelocityY(-speed);
-            moving = true;
-        }
+    if (this.player.cursors.up.isDown) offsetY = 35;
+    else if (this.player.cursors.down.isDown) offsetY = 65;
 
-        if (this.cursors.down.isDown) {
-            this.player.body.setVelocityY(speed);
-            moving = true;
-        }
+    // =========================
+    // BALL
+    // =========================
+    this.ball.update(this.player.sprite, offsetX, offsetY);
 
-        if (moving) {
-            if (!this.player.anims.isPlaying) {
-                this.player.play('run');
-            }
-        } else {
-            this.player.stop();
-            this.player.setFrame(0);
-        }
-        // =========================
-        // BALL OFFSET
-        // =========================
-        let offsetX = 25;
-        let offsetY = 50;
+    // =========================
+    // SHOOT
+    // =========================
+    if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
 
-        if (this.lastDirection === 'left') offsetX = -60;
-        else offsetX = 45;
-
-        if (this.cursors.up.isDown) offsetY = 35;
-        else if (this.cursors.down.isDown) offsetY = 65;
-
-        // =========================
-        // BALL CONTROL CENTRAL
-        // =========================
-        this.ball.update(this.player, offsetX, offsetY);
-
-        // =========================
-        // SHOOT
-        // =========================
-        if (Phaser.Input.Keyboard.JustDown(this.shootKey)) {
         let vx = 0;
         let vy = 0;
 
         const power = 350;
 
-        if (this.lastDirection === 'left') vx = -power;
-        if (this.lastDirection === 'right') vx = power;
+        if (this.player.lastDirection === 'left') vx = -power;
+        if (this.player.lastDirection === 'right') vx = power;
 
-        if (this.cursors.up.isDown) vy = -power;
-        if (this.cursors.down.isDown) vy = power;
+        if (this.player.cursors.up.isDown) vy = -power;
+        if (this.player.cursors.down.isDown) vy = power;
 
-        // si no hay input vertical, queda tiro horizontal puro
         this.ball.shoot(vx, vy);
-            }
-
-        // =========================
-        // LIMITES
-        // =========================
-        this.player.x = Phaser.Math.Clamp(
-            this.player.x,
-            this.offsetX + 40,
-            this.offsetX + this.fieldWidth - 40
-        );
-
-        this.player.y = Phaser.Math.Clamp(
-            this.player.y,
-            this.offsetY - 70,
-            this.offsetY + this.fieldHeight - 35
-        );
-
-        // =========================
-        // ENEMY AI
-        // =========================
-        const enemySpeed = 120;
-
-        const dx = this.ball.sprite.x - this.enemy.x;
-        const dy = this.ball.sprite.y - this.enemy.y;
-
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist > 5) {
-            this.enemy.body.setVelocity(
-                (dx / dist) * enemySpeed,
-                (dy / dist) * enemySpeed
-            );
-        } else {
-            this.enemy.body.setVelocity(0);
-        }
     }
+
+    // =========================
+    // LIMITES
+    // =========================
+    this.player.sprite.x = Phaser.Math.Clamp(
+        this.player.sprite.x,
+        this.offsetX + 40,
+        this.offsetX + this.fieldWidth - 40
+    );
+
+    this.player.sprite.y = Phaser.Math.Clamp(
+        this.player.sprite.y,
+        this.offsetY - 70,
+        this.offsetY + this.fieldHeight - 35
+    );
+
+    // =========================
+    // ENEMY
+    // =========================
+    this.enemy.update();
+}
+
 }
 
 const config = {
