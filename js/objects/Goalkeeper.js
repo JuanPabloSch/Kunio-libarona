@@ -62,21 +62,44 @@ trySave() {
     if (dist > 55) return;
     if (this.scene.ball.owner !== 'none') return;
 
-    // 55% atrapa / 45% rebote
-    if (Math.random() < 0.55) {
+    const roll = Math.random();
+
+    // =========================
+    // 25% ATRAPA
+    // =========================
+    if (roll < 0.25) {
 
         this.scene.ball.owner = 'enemy';
         this.scene.ball.state = 'IDLE';
-        this.scene.ball.protectTimer = 600;
+        this.scene.ball.protectTimer = 700;
 
-    } else {
+        return;
+    }
+
+    // =========================
+    // 60% REBOTE
+    // =========================
+    if (roll < 0.85) {
 
         let dir = (this.side === 'left') ? 1 : -1;
 
+        this.scene.ball.owner = 'none';
+        this.scene.ball.state = 'FREE';
+
         this.scene.ball.shoot(
-            dir * Phaser.Math.Between(220, 320),
-            Phaser.Math.Between(-120, 120)
+            dir * Phaser.Math.Between(260, 360),
+            Phaser.Math.Between(-140, 140)
         );
+
+        // evita robo instantáneo del enemy
+        this.scene.ball.protectTimer = 900;
+
+        return;
     }
+
+    // =========================
+    // 15% FALLA DEL ARQUERO
+    // =========================
+    // no hace nada: la pelota sigue y puede ser gol
 }
 }
