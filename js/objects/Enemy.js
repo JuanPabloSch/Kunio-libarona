@@ -14,10 +14,14 @@ export class Enemy {
         this.stunned = false;
         this.stunTimer = 0;
         this.isKicking = false;
+        this.tackleCooldown = 0;
     }
 
     update() {
 
+        if (this.tackleCooldown > 0) {
+            this.tackleCooldown -= this.scene.game.loop.delta;
+        }
         // =========================
         // STUN
         // =========================
@@ -148,9 +152,10 @@ export class Enemy {
     }
 
     tackle() {
+    if (this.tackleCooldown > 0) return;
 
     if (this.state === 'kick' || this.state === 'tackle' || this.stunned) return;
-
+    this.tackleCooldown = 1800;
     this.state = 'tackle';
 
     let speed = 420;
