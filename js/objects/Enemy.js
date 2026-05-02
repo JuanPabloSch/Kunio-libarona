@@ -48,10 +48,10 @@ export class Enemy {
         // =========================
         // SPEED
         // =========================
-        let speed = 150;
+        let speed = 175;
 
         if (this.ball.owner === 'enemy') {
-            speed = 170;
+            speed = 195;
         }
 
         let targetX = this.ball.sprite.x;

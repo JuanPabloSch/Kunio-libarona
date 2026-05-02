@@ -180,7 +180,9 @@ update() {
     const dy = this.enemy.sprite.y - this.player.sprite.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
-    this.player.slowed = (this.ball.owner === 'player' && dist < 140);
+    this.player.slowed = (
+    this.ball.owner === 'player'
+    );
     this.player.boosted = (this.ball.owner === 'enemy');
 
     // ROBO
