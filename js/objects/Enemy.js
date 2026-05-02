@@ -3,11 +3,11 @@ export class Enemy {
         this.scene = scene;
         this.ball = ball;
 
-        this.sprite = scene.physics.add.sprite(x, y, 'player');
+        this.sprite = scene.physics.add.sprite(x, y, 'enemy');
 
         this.sprite.setScale(0.5);
-        this.sprite.setTint(0xff4444);
         this.sprite.setDepth(2);
+        this.sprite.setCollideWorldBounds(true);
         this.sprite.setCollideWorldBounds(true);
         this.stunned = false;
         this.stunTimer = 0;
@@ -73,7 +73,7 @@ export class Enemy {
 
         // animar
         if (!this.sprite.anims.isPlaying) {
-            this.sprite.play('run');
+            this.sprite.play('enemy_run');
         }
 
     } else {

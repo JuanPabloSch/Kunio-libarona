@@ -35,14 +35,19 @@ class GameScene extends Phaser.Scene {
 
     preload() {
 
-        this.load.spritesheet('player', 'assets/player_run.png', {
-            frameWidth: 160,
-            frameHeight: 259
-        });
+    this.load.spritesheet('player', 'assets/player_run.png', {
+    frameWidth: 110,
+    frameHeight: 233
+});
 
-        this.load.spritesheet('ball', 'assets/ball.png', {
-            frameWidth: Math.floor(1409 / 12),
-            frameHeight: 91
+    this.load.spritesheet('enemy', 'assets/enemy_run.png', {
+    frameWidth: 111,
+    frameHeight: 211
+});
+
+    this.load.spritesheet('ball', 'assets/ball.png', {
+        frameWidth: Math.floor(1409 / 12),
+        frameHeight: 91
         });
     }
 
@@ -141,6 +146,16 @@ this.tackleKey = this.input.keyboard.addKey(
         }),
         frameRate: 8,
         repeat: -1
+    });
+
+    this.anims.create({
+    key: 'enemy_run',
+    frames: this.anims.generateFrameNumbers('enemy', {
+        start: 0,
+        end: 4
+    }),
+    frameRate: 10,
+    repeat: -1
     });
     // =========================
     // SCORE
