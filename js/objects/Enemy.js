@@ -76,6 +76,21 @@ export class Enemy {
             }
         }
 
+        const playerDist = Phaser.Math.Distance.Between(
+    this.sprite.x,
+    this.sprite.y,
+    this.scene.player.sprite.x,
+    this.scene.player.sprite.y
+    );
+
+    if (
+        this.ball.owner === 'player' &&
+        playerDist < 90 &&
+        this.state === 'run'
+    ) {
+        this.tackle();
+    }
+        
         // =========================
         // MOVIMIENTO
         // =========================
@@ -131,4 +146,26 @@ export class Enemy {
             this.state = 'run';
         });
     }
+
+    tackle() {
+
+    if (this.state === 'kick' || this.state === 'tackle' || this.stunned) return;
+
+    this.state = 'tackle';
+
+    let speed = 420;
+
+    if (this.sprite.flipX) {
+        this.sprite.setVelocityX(-speed);
+    } else {
+        this.sprite.setVelocityX(speed);
+    }
+
+    this.sprite.play('enemy_tackle', true);
+
+    this.sprite.once('animationcomplete', () => {
+        this.sprite.setVelocity(0);
+        this.state = 'run';
+    });
+}
 }

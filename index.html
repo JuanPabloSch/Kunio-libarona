@@ -61,6 +61,11 @@ preload() {
     frameHeight: 221
     });
 
+    this.load.spritesheet('enemy_tackle', 'assets/enemy_tackle.png', {
+    frameWidth: 164,
+    frameHeight: 218
+});
+
     this.load.spritesheet('ball', 'assets/ball.png', {
         frameWidth: Math.floor(1409 / 12),
         frameHeight: 91
@@ -85,6 +90,16 @@ create() {
     frameRate: 12,
     repeat: 0
     });
+
+    this.anims.create({
+    key: 'enemy_tackle',
+    frames: this.anims.generateFrameNumbers('enemy_tackle', {
+        start: 0,
+        end: 2
+    }),
+    frameRate: 12,
+    repeat: 0
+});
 
     this.anims.create({
         key: 'player_kick',
@@ -252,6 +267,25 @@ update() {
 
     // ENEMY
     this.enemy.update();
+
+    if (this.enemy.state === 'tackle') {
+
+    const dist = Phaser.Math.Distance.Between(
+        this.enemy.sprite.x,
+        this.enemy.sprite.y,
+        this.player.sprite.x,
+        this.player.sprite.y
+    );
+
+    if (dist < 70 && this.ball.owner === 'player') {
+
+        this.player.stun(1200);
+
+        this.ball.owner = 'enemy';
+        this.ball.state = 'IDLE';
+        this.ball.protectTimer = 500;
+    }
+}
 
     if (this.player.isTackling) {
 
