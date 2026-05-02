@@ -263,8 +263,13 @@ update() {
 
     // ENEMY
     this.enemy.update();
+    
+    // ARQUEROS
     this.keeperLeft.update();
     this.keeperRight.update();
+
+    this.keeperLeft.trySave();
+    this.keeperRight.trySave();
 
     if (this.enemy.state === 'tackle') {
 

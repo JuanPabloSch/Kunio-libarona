@@ -47,4 +47,36 @@ export class Goalkeeper {
 
         this.sprite.setVelocityX(0);
     }
+    
+trySave() {
+
+    const ball = this.scene.ball.sprite;
+
+    const dist = Phaser.Math.Distance.Between(
+        this.sprite.x,
+        this.sprite.y,
+        ball.x,
+        ball.y
+    );
+
+    if (dist > 55) return;
+    if (this.scene.ball.owner !== 'none') return;
+
+    // 55% atrapa / 45% rebote
+    if (Math.random() < 0.55) {
+
+        this.scene.ball.owner = 'enemy';
+        this.scene.ball.state = 'IDLE';
+        this.scene.ball.protectTimer = 600;
+
+    } else {
+
+        let dir = (this.side === 'left') ? 1 : -1;
+
+        this.scene.ball.shoot(
+            dir * Phaser.Math.Between(220, 320),
+            Phaser.Math.Between(-120, 120)
+        );
+    }
+}
 }
