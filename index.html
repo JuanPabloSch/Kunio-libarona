@@ -56,11 +56,16 @@ preload() {
         frameHeight: 213
     });
 
+    this.load.spritesheet('player_tackle', 'assets/player_tackle.png', {
+    frameWidth: 160,
+    frameHeight: 221
+    });
+
     this.load.spritesheet('ball', 'assets/ball.png', {
         frameWidth: Math.floor(1409 / 12),
         frameHeight: 91
     });
-}
+    }
 
 create() {
 
@@ -70,6 +75,16 @@ create() {
     this.callKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.tackleKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL);
     this.shootKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+    this.anims.create({
+    key: 'player_tackle',
+    frames: this.anims.generateFrameNumbers('player_tackle', {
+        start: 0,
+        end: 2
+    }),
+    frameRate: 12,
+    repeat: 0
+    });
 
     this.anims.create({
         key: 'player_kick',
@@ -170,12 +185,14 @@ update() {
 
     // ROBO
     if (
-        dist < 55 &&
-        this.ball.owner === 'player' &&
-        this.ball.state === 'IDLE' &&
-        this.ball.protectTimer <= 0 &&
-        !this.player.stunned
-    ) {
+    dist < 55 &&
+    this.ball.owner === 'player' &&
+    this.ball.state === 'IDLE' &&
+    this.ball.protectTimer <= 0 &&
+    !this.player.stunned &&
+    !this.enemy.stunned
+)
+{
         this.player.stun(1500);
         this.ball.owner = 'enemy';
     }
@@ -197,25 +214,11 @@ update() {
         }
     }
 
-    // TACKLE (UNICO)
+
+    // TACKLE
     if (Phaser.Input.Keyboard.JustDown(this.tackleKey)) {
-
-        const tackleDist = Phaser.Math.Distance.Between(
-            this.player.sprite.x,
-            this.player.sprite.y,
-            this.enemy.sprite.x,
-            this.enemy.sprite.y
-        );
-
-        if (tackleDist < 80 && this.ball.owner === 'enemy') {
-
-            this.enemy.stun(1000);
-
-            this.ball.owner = 'player';
-            this.ball.state = 'IDLE';
-            this.ball.protectTimer = 600;
-        }
-    }
+    this.player.tackle();
+}
 
     // BALL OFFSET
     let offsetX = (this.player.lastDirection === 'left') ? -60 : 45;
@@ -247,6 +250,25 @@ update() {
 
     // ENEMY
     this.enemy.update();
+
+    if (this.player.isTackling) {
+
+    const dist = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.enemy.sprite.x,
+        this.enemy.sprite.y
+    );
+
+    if (dist < 70 && this.ball.owner === 'enemy') {
+
+        this.enemy.stun(1000);
+
+        this.ball.owner = 'player';
+        this.ball.state = 'IDLE';
+        this.ball.protectTimer = 500;
+    }
+}
 
     // PROTECT TIMER
     if (this.ball.protectTimer > 0) {

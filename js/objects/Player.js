@@ -20,6 +20,7 @@ export class Player {
         this.stunTimer = 0;
 
         this.isKicking = false;
+        this.isTackling = false;
     }
 
     update() {
@@ -48,6 +49,10 @@ export class Player {
         // =========================
         if (this.isKicking) {
             this.sprite.body.setVelocity(0);
+            return;
+        }
+
+        if (this.isTackling) {
             return;
         }
 
@@ -109,14 +114,37 @@ export class Player {
     }
 
     kick() {
-        // evita que se mezcle con run
-        this.isKicking = true;
+    this.isKicking = true;
 
-        this.sprite.body.setVelocity(0);
-        this.sprite.play('player_kick', true);
+    this.sprite.body.setVelocity(0);
+    this.sprite.play('player_kick', true);
 
-        this.sprite.once('animationcomplete', () => {
-            this.isKicking = false;
-        });
+    this.sprite.once('animationcomplete', () => {
+        this.isKicking = false;
+    });
+}
+
+tackle() {
+
+    if (this.isTackling || this.isKicking || this.stunned) return;
+
+    this.isTackling = true;
+
+    let speed = 500;
+
+    if (this.lastDirection === 'left') {
+        this.sprite.setVelocityX(-speed);
+        this.sprite.flipX = true;
+    } else {
+        this.sprite.setVelocityX(speed);
+        this.sprite.flipX = false;
     }
+
+    this.sprite.play('player_tackle', true);
+
+    this.sprite.once('animationcomplete', () => {
+        this.sprite.setVelocity(0);
+        this.isTackling = false;
+    });
+}
 }
