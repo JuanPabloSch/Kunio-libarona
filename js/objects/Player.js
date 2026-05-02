@@ -21,10 +21,14 @@ export class Player {
 
         this.isKicking = false;
         this.isTackling = false;
+        this.tackleCooldown = 0;
     }
 
     update() {
 
+        if (this.tackleCooldown > 0) {
+            this.tackleCooldown -= this.scene.game.loop.delta;
+        }
         // =========================
         // STUN
         // =========================
@@ -125,9 +129,9 @@ export class Player {
 }
 
 tackle() {
-
+    if (this.tackleCooldown > 0) return;
     if (this.isTackling || this.isKicking || this.stunned) return;
-
+    this.tackleCooldown = 1400;
     this.isTackling = true;
 
     let speed = 500;
