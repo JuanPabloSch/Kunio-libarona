@@ -46,9 +46,11 @@ export class MatchManager {
     }).setScrollFactor(0).setDepth(99);
 
         this.goalText = this.scene.add.text(320, 260, 'GOAL!!', {
-            fontSize: '56px',
-            color: '#ffff00',
-            fontStyle: 'bold'
+            fontFamily: 'Arial Black',
+        fontSize: '30px',
+        color: '#ffff00',
+        stroke: '#000000',
+        strokeThickness: 4
         })
         .setScrollFactor(0)
         .setDepth(200)
