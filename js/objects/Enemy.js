@@ -11,11 +11,12 @@ export class Enemy {
         this.sprite.setCollideWorldBounds(true);
         this.stunned = false;
         this.stunTimer = 0;
+        this.state = 'run';
     }
 
     update() {
 
-        if (this.stunned) {
+    if (this.stunned) {
 
     this.stunTimer -= this.scene.game.loop.delta;
 
@@ -48,11 +49,13 @@ export class Enemy {
     targetY = this.scene.centerY;
 
     // si llegó cerca del arco, patea
-    if (this.sprite.x < this.scene.offsetX + 220) {
+    if (this.state === 'run' && this.sprite.x < this.scene.offsetX + 220) {
 
-        this.ball.shoot(-420, 0);
-        this.ball.owner = 'none';
-    }
+    this.kick(); // animación
+
+    this.ball.shoot(-420, 0);
+    this.ball.owner = 'none';
+}
 }
 
     const dx = targetX - this.sprite.x;
@@ -72,8 +75,10 @@ export class Enemy {
         else this.sprite.flipX = false;
 
         // animar
-        if (!this.sprite.anims.isPlaying) {
-            this.sprite.play('enemy_run');
+        if (this.state === 'run') {
+    if (!this.sprite.anims.isPlaying) {
+        this.sprite.play('enemy_run', true);
+    }
         }
 
     } else {
@@ -86,5 +91,17 @@ export class Enemy {
 stun(ms = 1000) {
     this.stunned = true;
     this.stunTimer = ms;
+}
+kick() {
+    if (this.state === 'kick') return;
+
+    this.state = 'kick';
+
+    this.sprite.body.setVelocity(0);
+    this.sprite.anims.play('enemy_kick', true);
+
+    this.sprite.once('animationcomplete', () => {
+        this.state = 'run';
+    });
 }
 }

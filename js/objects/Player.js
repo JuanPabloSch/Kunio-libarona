@@ -16,6 +16,7 @@ export class Player {
         this.stunned = false;
         this.stunTimer = 0;
         this.boosted = false;
+        this.isKicking = false;
     }
 
     update() {
@@ -73,9 +74,11 @@ export class Player {
             moving = true;
         }
 
+        if (this.isKicking) return;
+
         if (moving) {
             if (!this.sprite.anims.isPlaying) {
-                this.sprite.play('run');
+                this.sprite.play('run', true);
             }
         } else {
             this.sprite.stop();
@@ -85,6 +88,13 @@ export class Player {
 stun(ms = 1500) {
     this.stunned = true;
     this.stunTimer = ms;
+}
+
+kick() {
+    this.sprite.anims.play('player_kick', true);
+
+    // opcional: corta movimiento mientras patea
+    this.sprite.body.setVelocity(0);
 }
 }
 
