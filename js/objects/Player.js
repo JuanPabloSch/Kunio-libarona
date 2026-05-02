@@ -129,8 +129,16 @@ export class Player {
 }
 
 tackle() {
+
     if (this.tackleCooldown > 0) return;
-    if (this.isTackling || this.isKicking || this.stunned) return;
+
+    if (
+        this.isTackling ||
+        this.isKicking ||
+        this.stunned ||
+        this.scene.ball.owner === 'player'
+    ) return;
+
     this.tackleCooldown = 1400;
     this.isTackling = true;
 

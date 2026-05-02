@@ -207,12 +207,13 @@ update() {
     this.ball.state === 'IDLE' &&
     this.ball.protectTimer <= 0 &&
     !this.player.stunned &&
-    !this.enemy.stunned
+    !this.enemy.stunned &&
+    !this.player.isTackling
 )
 {
-        this.player.stun(1500);
-        this.ball.owner = 'enemy';
-    }
+    this.player.stun(1500);
+    this.ball.owner = 'enemy';
+}
 
     // CALL BALL
     if (Phaser.Input.Keyboard.JustDown(this.callKey)) {
