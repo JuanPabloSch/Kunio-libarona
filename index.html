@@ -27,6 +27,7 @@ import { setupWorld, createField } from './js/objects/Field.js';
 import { Ball } from './js/objects/Ball.js';
 import { Player } from './js/objects/Player.js';
 import { Enemy } from './js/objects/Enemy.js';
+import { MatchManager } from './js/managers/MatchManager.js';
 
 class GameScene extends Phaser.Scene {
 
@@ -115,8 +116,6 @@ create() {
         repeat: 0
     });
 
-    this.goalLock = false;
-
     // PLAYER
     this.player = new Player(this, this.centerX, this.centerY);
 
@@ -160,30 +159,8 @@ create() {
         frameRate: 10,
         repeat: -1
     });
-
-    // SCORE
-    this.scoreHome = 0;
-    this.scoreAway = 0;
-
-    this.homeText = this.add.text(20, 20, 'HOME 0', {
-        fontSize: '28px',
-        color: '#ffffff',
-        fontStyle: 'bold'
-    }).setScrollFactor(0);
-
-    this.awayText = this.add.text(620, 20, 'AWAY 0', {
-        fontSize: '28px',
-        color: '#ffffff',
-        fontStyle: 'bold'
-    }).setScrollFactor(0);
-
-    this.goalText = this.add.text(320, 260, 'GOAL!!', {
-        fontSize: '56px',
-        color: '#ffff00',
-        fontStyle: 'bold'
-    })
-    .setScrollFactor(0)
-    .setVisible(false);
+        //match manager
+    this.match = new MatchManager(this);
 }
 
 update() {
@@ -311,61 +288,7 @@ update() {
     if (this.ball.protectTimer > 0) {
         this.ball.protectTimer -= this.game.loop.delta;
     }
-
-    // GOALS
-    const bx = this.ball.sprite.x;
-    const by = this.ball.sprite.y;
-
-    const goalTop = this.centerY - 90;
-    const goalBottom = this.centerY + 90;
-
-    if (!this.goalLock && bx < this.offsetX - 20 && by > goalTop && by < goalBottom) {
-        this.goalLock = true;
-        this.scoreAway++;
-        this.updateScore();
-        this.ballReset();
-    }
-
-    if (!this.goalLock && bx > this.offsetX + this.fieldWidth + 5 && by > goalTop && by < goalBottom) {
-        this.goalLock = true;
-        this.scoreHome++;
-        this.updateScore();
-        this.ballReset();
-    }
-}
-
-updateScore() {
-    this.homeText.setText('HOME ' + this.scoreHome);
-    this.awayText.setText('AWAY ' + this.scoreAway);
-}
-
-ballReset() {
-
-    this.player.sprite.body.setVelocity(0);
-    this.enemy.sprite.body.setVelocity(0);
-    this.ball.sprite.body.setVelocity(0);
-
-    this.goalText.setVisible(true);
-    this.physics.pause();
-
-    this.time.delayedCall(1000, () => {
-
-        this.player.sprite.x = this.startPlayerX;
-        this.player.sprite.y = this.startPlayerY;
-
-        this.enemy.sprite.x = this.startEnemyX;
-        this.enemy.sprite.y = this.startEnemyY;
-
-        this.ball.sprite.x = this.centerX + 50;
-        this.ball.sprite.y = this.centerY;
-
-        this.ball.state = 'IDLE';
-        this.ball.owner = 'player';
-
-        this.goalText.setVisible(false);
-        this.physics.resume();
-        this.goalLock = false;
-    });
+    this.match.update();
 }
 }
 
