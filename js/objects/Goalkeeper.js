@@ -14,10 +14,15 @@ export class Goalkeeper {
         this.homeY = y;
 
         this.speed = 140;
+        this.saveCooldown = 0;
     }
 
     update() {
 
+        if (this.saveCooldown > 0) {
+        this.saveCooldown -= this.scene.game.loop.delta;
+    }
+        
         const ball = this.scene.ball.sprite;
 
         let targetY = this.homeY;
@@ -50,6 +55,8 @@ export class Goalkeeper {
     
 trySave() {
 
+    if (this.saveCooldown > 0) return;
+
     const ball = this.scene.ball.sprite;
 
     const dist = Phaser.Math.Distance.Between(
@@ -62,44 +69,34 @@ trySave() {
     if (dist > 55) return;
     if (this.scene.ball.owner !== 'none') return;
 
+    // bloquea nuevos intentos
+    this.saveCooldown = 900;
+
     const roll = Math.random();
 
-    // =========================
-    // 25% ATRAPA
-    // =========================
+    // 25% atrapa
     if (roll < 0.25) {
 
         this.scene.ball.owner = 'enemy';
         this.scene.ball.state = 'IDLE';
         this.scene.ball.protectTimer = 700;
-
         return;
     }
 
-    // =========================
-    // 60% REBOTE
-    // =========================
+    // 60% rebote
     if (roll < 0.85) {
 
         let dir = (this.side === 'left') ? 1 : -1;
-
-        this.scene.ball.owner = 'none';
-        this.scene.ball.state = 'FREE';
 
         this.scene.ball.shoot(
             dir * Phaser.Math.Between(260, 360),
             Phaser.Math.Between(-140, 140)
         );
 
-        // evita robo instantáneo del enemy
         this.scene.ball.protectTimer = 900;
-
         return;
     }
 
-    // =========================
-    // 15% FALLA DEL ARQUERO
-    // =========================
-    // no hace nada: la pelota sigue y puede ser gol
+    // 15% falla total
 }
 }

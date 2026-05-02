@@ -148,6 +148,8 @@ create() {
     this.startEnemyX = this.centerX + 250;
     this.startEnemyY = this.centerY;
 
+    this.match = new MatchManager(this);
+
     // WORLD
     this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
 
@@ -175,10 +177,17 @@ create() {
         frameRate: 10,
         repeat: -1
     });
-        //match manager
-    this.match = new MatchManager(this);
-    this.physics.add.collider(this.ball.sprite, this.keeperLeft.sprite);
-    this.physics.add.collider(this.ball.sprite, this.keeperRight.sprite);
+    this.physics.add.overlap(
+    this.ball.sprite,
+    this.keeperLeft.sprite,
+    () => this.keeperLeft.trySave()
+);
+
+this.physics.add.overlap(
+    this.ball.sprite,
+    this.keeperRight.sprite,
+    () => this.keeperRight.trySave()
+);
 }
 
 update() {
@@ -268,8 +277,8 @@ update() {
     this.keeperLeft.update();
     this.keeperRight.update();
 
-    this.keeperLeft.trySave();
-    this.keeperRight.trySave();
+    // this.keeperLeft.trySave();
+    // this.keeperRight.trySave();
 
     if (this.enemy.state === 'tackle') {
 

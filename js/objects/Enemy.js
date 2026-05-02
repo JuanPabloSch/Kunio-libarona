@@ -112,15 +112,15 @@ export class Enemy {
 
             this.sprite.flipX = dx < 0;
 
-            if (this.state === 'run') {
-                this.sprite.play('enemy_run', true);
-            }
+            // ANIMACIÓN CENTRAL
+            if (this.state === 'tackle') return;
+            if (this.state === 'kick') return;
+
+            this.sprite.play('enemy_run', true);
 
         } else {
             this.sprite.body.setVelocity(0);
-            this.sprite.stop();
-            this.sprite.setFrame(0);
-        }
+            }
     }
 
     // =========================
@@ -159,9 +159,9 @@ export class Enemy {
     let speed = 420;
 
     if (this.sprite.flipX) {
-        this.sprite.setVelocityX(-speed);
+        this.sprite.body.setVelocityX(-speed);
     } else {
-        this.sprite.setVelocityX(speed);
+        this.sprite.body.setVelocityX(speed);
     }
 
     this.sprite.play('enemy_tackle', true);
