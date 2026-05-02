@@ -28,6 +28,7 @@ import { Ball } from './js/objects/Ball.js';
 import { Player } from './js/objects/Player.js';
 import { Enemy } from './js/objects/Enemy.js';
 import { MatchManager } from './js/managers/MatchManager.js';
+import { Goalkeeper } from './js/objects/Goalkeeper.js';
 
 class GameScene extends Phaser.Scene {
 
@@ -125,6 +126,21 @@ create() {
     // ENEMY
     this.enemy = new Enemy(this, this.centerX + 250, this.centerY, this.ball);
 
+    //GK
+    this.keeperLeft = new Goalkeeper(
+    this,
+    this.offsetX + 35,
+    this.centerY,
+    'left'
+    );
+
+    this.keeperRight = new Goalkeeper(
+        this,
+        this.offsetX + this.fieldWidth - 35,
+        this.centerY,
+        'right'
+    );
+
     // reset positions
     this.startPlayerX = this.centerX;
     this.startPlayerY = this.centerY;
@@ -161,6 +177,8 @@ create() {
     });
         //match manager
     this.match = new MatchManager(this);
+    this.physics.add.collider(this.ball.sprite, this.keeperLeft.sprite);
+    this.physics.add.collider(this.ball.sprite, this.keeperRight.sprite);
 }
 
 update() {
@@ -245,6 +263,8 @@ update() {
 
     // ENEMY
     this.enemy.update();
+    this.keeperLeft.update();
+    this.keeperRight.update();
 
     if (this.enemy.state === 'tackle') {
 

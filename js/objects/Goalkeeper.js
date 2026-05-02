@@ -1,0 +1,50 @@
+export class Goalkeeper {
+
+    constructor(scene, x, y, side) {
+        this.scene = scene;
+        this.side = side; // left / right
+
+        this.sprite = scene.physics.add.sprite(x, y, 'enemy');
+
+        this.sprite.setScale(0.5);
+        this.sprite.setDepth(2);
+        this.sprite.setImmovable(true);
+
+        this.homeX = x;
+        this.homeY = y;
+
+        this.speed = 140;
+    }
+
+    update() {
+
+        const ball = this.scene.ball.sprite;
+
+        let targetY = this.homeY;
+
+        // seguir pelota si entra cerca del arco
+        if (Math.abs(ball.x - this.homeX) < 220) {
+            targetY = ball.y;
+        }
+
+        const dy = targetY - this.sprite.y;
+
+        if (Math.abs(dy) > 6) {
+            this.sprite.setVelocityY(Math.sign(dy) * this.speed);
+        } else {
+            this.sprite.setVelocityY(0);
+        }
+
+        // límites verticales del arco
+        const top = this.scene.centerY - 90;
+        const bottom = this.scene.centerY + 90;
+
+        this.sprite.y = Phaser.Math.Clamp(
+            this.sprite.y,
+            top,
+            bottom
+        );
+
+        this.sprite.setVelocityX(0);
+    }
+}

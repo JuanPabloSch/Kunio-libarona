@@ -113,9 +113,7 @@ export class Enemy {
             this.sprite.flipX = dx < 0;
 
             if (this.state === 'run') {
-                if (!this.sprite.anims.isPlaying) {
-                    this.sprite.play('enemy_run', true);
-                }
+                this.sprite.play('enemy_run', true);
             }
 
         } else {
