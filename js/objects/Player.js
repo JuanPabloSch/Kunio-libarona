@@ -8,39 +8,52 @@ export class Player {
         this.sprite.setScale(0.5);
         this.sprite.setCollideWorldBounds(true);
 
-        this.lastDirection = 'right';
-
         this.cursors = scene.input.keyboard.createCursorKeys();
 
+        this.lastDirection = 'right';
+
+        // estados
         this.slowed = false;
+        this.boosted = false;
+
         this.stunned = false;
         this.stunTimer = 0;
-        this.boosted = false;
+
         this.isKicking = false;
     }
 
     update() {
-    if (this.stunned) {
 
-    this.stunTimer -= this.scene.game.loop.delta;
+        // =========================
+        // STUN
+        // =========================
+        if (this.stunned) {
 
-    this.sprite.body.setVelocity(0);
+            this.stunTimer -= this.scene.game.loop.delta;
 
-    // color stun
-    this.sprite.setTint(0xff8800);
+            this.sprite.body.setVelocity(0);
+            this.sprite.setTint(0xff8800);
+            this.sprite.setFrame(0);
 
-    // congelar frame
-    this.sprite.stop();
-    this.sprite.setFrame(0);
+            if (this.stunTimer <= 0) {
+                this.stunned = false;
+                this.sprite.clearTint();
+            }
 
-    if (this.stunTimer <= 0) {
-        this.stunned = false;
-        this.sprite.clearTint();
-    }
+            return;
+        }
 
-    return;
-}
-        
+        // =========================
+        // KICK BLOCK (evita pisar animación)
+        // =========================
+        if (this.isKicking) {
+            this.sprite.body.setVelocity(0);
+            return;
+        }
+
+        // =========================
+        // SPEED
+        // =========================
         let speed = 200;
 
         if (this.slowed) speed = 145;
@@ -50,6 +63,9 @@ export class Player {
 
         let moving = false;
 
+        // =========================
+        // MOVIMIENTO
+        // =========================
         if (this.cursors.left.isDown) {
             this.sprite.body.setVelocityX(-speed);
             this.sprite.flipX = true;
@@ -74,8 +90,9 @@ export class Player {
             moving = true;
         }
 
-        if (this.isKicking) return;
-
+        // =========================
+        // ANIMACIONES
+        // =========================
         if (moving) {
             if (!this.sprite.anims.isPlaying) {
                 this.sprite.play('run', true);
@@ -85,16 +102,21 @@ export class Player {
             this.sprite.setFrame(0);
         }
     }
-stun(ms = 1500) {
-    this.stunned = true;
-    this.stunTimer = ms;
-}
 
-kick() {
-    this.sprite.anims.play('player_kick', true);
+    stun(ms = 1500) {
+        this.stunned = true;
+        this.stunTimer = ms;
+    }
 
-    // opcional: corta movimiento mientras patea
-    this.sprite.body.setVelocity(0);
-}
-}
+    kick() {
+        // evita que se mezcle con run
+        this.isKicking = true;
 
+        this.sprite.body.setVelocity(0);
+        this.sprite.play('player_kick', true);
+
+        this.sprite.once('animationcomplete', () => {
+            this.isKicking = false;
+        });
+    }
+}
